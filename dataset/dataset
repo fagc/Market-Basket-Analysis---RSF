@@ -1,0 +1,4 @@
+# download data set on your system and move it to this Folder.
+#  kagglehub.dataset_download("mkechinov/ecommerce-purchase-history-from-electronics-store") - dataset1
+# kagglehub.dataset_download("datafiniti/electronic-products-prices") - dataset2
+# Name the DataSet1 and DataSet2
