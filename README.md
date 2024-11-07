@@ -10,3 +10,6 @@ Analysis from both the data sets will be done on basis of categories and brand
 The data analysis will be done on basis of category, brand and price. 
 Questions that will be answered - What electronic categories are most popular among user, and in those categories what brands are frequenty purchased. What is the price range that user prefer.
 
+Requires: 
+Python 3.x with: pandas, numpy, matplotlib, seaborn, statsmodels, pmdarima
+
