@@ -3,6 +3,8 @@ import pandas as pd
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
+from mlxtend.preprocessing import TransactionEncoder
+from mlxtend.frequent_patterns import apriori, association_rules
 
 #Uncomment to download the dataset
 # Download latest version
@@ -86,6 +88,7 @@ print(retail1.describe())
 retail1 = retail1[retail1['user_id'].notna()]
 #Checking Null Values
 retail1.isnull().sum()
+retail1 = retail1.dropna()
 
 #DS2
 print('\n-------------DataSet2----------')
@@ -97,3 +100,66 @@ print(retail2.describe())
 retail2 = retail2[retail2['id'].notna()]
 #Checking Null Values
 retail2.isnull().sum()
+retail2 = retail2.dropna()
+
+#Boxplot for UnitPrice
+sns.boxplot(x=retail1['price'])
+
+
+# Plotting a Histogram
+retail1.user_id.value_counts().nlargest(20).plot(kind='bar', figsize=(10,5))
+plt.title('Top 20 Customers in terms of Purchase')
+plt.ylabel('Number of Purchases')
+plt.xlabel('Customer ID')
+plt.show()
+
+# Plotting a Histogram
+retail1.category_code.value_counts().nlargest(20).plot(kind='bar', figsize=(10,5))
+plt.title('Purchase count of top 20 Items')
+plt.ylabel('Number of Purchases')
+plt.xlabel('Items')
+plt.show()
+
+# Plotting a Histogram
+retail1.brand.value_counts().nlargest(20).plot(kind='bar', figsize=(10,5))
+plt.title('Top 20 Brands in terms of Purchase')
+plt.ylabel('Number of Purchases')
+plt.xlabel('Brand')
+plt.show()
+
+#apriori
+#clean data for apriori
+retail1 = retail1.astype(bool).astype(int)  # Convert boolean to binary if needed
+retail1 = retail1.apply(pd.to_numeric, errors='coerce').fillna(0)  # Ensure numeric format
+
+# Run Apriori
+
+# use the apriori method to find frequent patterns
+min_support = 0.002
+
+freq_itemsets = apriori(retail1, min_support=0.02, use_colnames=True)
+
+## we can add the length of the itemsets as a column
+freq_itemsets = (
+    freq_itemsets
+    .assign(
+        length=lambda df_: df_.itemsets.apply(len),  # apply the len function
+    )
+)
+print(freq_itemsets)
+
+# Function to get top 5 itemsets by length
+def top_itemsets_by_length(df, length, top_n=5):
+    return df[df['length'] == length].nlargest(top_n, 'support')
+
+# Cal the funtion for length 1, 2, 3
+top_length_1 = top_itemsets_by_length(freq_itemsets, length=1)
+top_length_2 = top_itemsets_by_length(freq_itemsets, length=2)
+top_length_3 = top_itemsets_by_length(freq_itemsets, length=3)
+
+print("Top 5 Itemsets Length 1:")
+print(top_length_1[['itemsets', 'support']])
+print("\nTop 5 Itemsets Length 2:")
+print(top_length_2[['itemsets', 'support']])
+print("\nTop 5 Itemsets Length 3:")
+print(top_length_3[['itemsets', 'support']])
